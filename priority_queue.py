@@ -61,19 +61,27 @@ class ArrayHeapPriorityQueue(PriorityQueue):
             self._upHeap(parent)
 
     def _downHeap(self, index):
-        a, b = self._hasLeft(index), self._hasRight(index)
-        if a and b:
-            small_child = min(self._left(index), self._right(index))
-        elif a:
-            small_child = self._left(index)
-        elif b:
-            small_child = self._right(index)
-        else:
-            return
+        # a, b = self._hasLeft(index), self._hasRight(index)
+        # if a and b:
+        #     small_child = min(self._left(index), self._right(index))
+        # elif a:
+        #     small_child = self._left(index)
+        # elif b:
+        #     small_child = self._right(index)
+        # else:
+        #     return
         
-        if self._array[small_child] < self._array[index]:
-            self._swapNodes(index, small_child)
-            self._downHeap(small_child)
+        if self._hasLeft(index):
+            left = self._left(index)
+            small_child = left # although right may be smaller
+            if self._hasRight(index):
+                right = self._right(index)
+                if self._array[right] < self._array[left]:
+                    small_child = right
+
+            if self._array[small_child] < self._array[index]:
+                self._swapNodes(index, small_child)
+                self._downHeap(small_child)
 
     def __init__(self) -> None:
         self._array = []
@@ -113,95 +121,42 @@ class Pagoda_Node:
 
 # Helper class
 # Pagoda class
-class Pagoda(PriorityQueue):
+class Pagoda():
     # Constructor of this class
     def __init__(self):
         # Initializing the root in the Pagoda as None
         self.root = None
     
-    # Method 1
-    # To check if Pagoda is empty
     def isEmpty(self):
         # Returns true if root is equal to null
         # else returns false
         return self.root is None
     
-    # Method 2
-    # To clear the entire Pagoda
     def clear(self):
         # Clears or Empties the entire Pagoda
         self.root = None
     
-    # Method 3
-    # To insert node into the Pagoda
-    def add(self, val):
-        # Creates a new node with data as val
-        node = Pagoda_Node(val)
-        # Inserts into Pagoda
-        self.root = self._insert(node, self.root)
-
-    def _insert(self, node, queue):
-        # Initially the new node has no left child
-        # so the left pointer points to itself
-        node.left = node
-        # Initially the new node has no right child
-        # so the right pointer points to itself
-        node.right = node
-        # Calling merge to attach new node to Pagoda
-        return self._merge(queue, node)
-
-    # Method 4
-    # To merge new node to Pagoda
-    # New node is inserted as a leaf node
-    # and to maintain the heap property
-    # if the new node is greater than its parent
-    # both nodes are swapped and this continues till
-    # all parents are greater than its children
-    def _merge(self, root, newnode):
-        if root is None:
-            # If root is null, after merge - only newnode
-            return newnode
-        elif newnode is None:
-            # If newnode is null, after merge - only root
-            return root
+    def add(self, data):
+        if self.root == None:
+            self.root = Pagoda_Node(data)
         else:
-            # Bottom of root's rightmost edge
-            botroot = root.right
-            root.right = None
-            # bottom of newnode's leftmost edge - mostly
-            # itself
-            botnew = newnode.left
-            newnode.left = None
-            r = None
-            # Iterating via loop for merging
-            while botroot is not None and botnew is not None:
-                # Comparing parent and child
-                if botroot.data < botnew.data:
-                    temp = botroot.right
-                    if r is None:
-                        botroot.right = botroot
-                    else:
-                        botroot.right = r.right
-                        r.right = botroot
-                    r = botroot
-                    botroot = temp
-                else:
-                    # Comparing parent and child
-                    temp = botnew.left
-                    if r is None:
-                        botnew.left = botnew
-                    else:
-                        # Swapping of child and parent
-                        botnew.left = r.left
-                        r.left = botnew
-                    r = botnew
-                    botnew = temp
-            # Merging stops after either
-            # botnew or botroot becomes null
-            # Condition check when node(botnew) is null
-            if botnew is None:
-                root.right = r.right
-                r.right = botroot
-                return root
+            self._add(self.root, Pagoda_Node(data))
+    
+            
+    # def traverse(self, root):
+    #     if root == None:
+    #         return
+    #     print(root.data, end=' ')
+    #     self.traverse(root.left)
+    #     self.traverse(root.right)
+
+    def traverse(self, root):
+        if root is None:
+            return
+        print(root.data, end=' ')
+        if root.left is not None:
+            self.traverse(root.left)
+        if root.right is not None:
+            self.traverse(root.right)
 
     
