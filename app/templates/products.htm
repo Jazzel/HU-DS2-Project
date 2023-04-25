@@ -46,7 +46,9 @@
                 </tr>
             </thead>
             <tbody>
+                {% for product in data %}
                 <tr>
+                    <td>Product 1</td>
                     <td>Product 1</td>
                     <td>Description of product 1</td>
                     <td>$19.99</td>
@@ -56,16 +58,7 @@
                         <button class="btn btn-sm btn-danger">Delete</button>
                     </td>
                 </tr>
-                <tr>
-                    <td>Product 2</td>
-                    <td>Description of product 2</td>
-                    <td>$29.99</td>
-                    <td>5</td>
-                    <td>
-                        <button class="btn btn-sm btn-primary">Edit</button>
-                        <button class="btn btn-sm btn-danger">Delete</button>
-                    </td>
-                </tr>
+                {% endfor %}
                 <!-- add more products here -->
             </tbody>
         </table>
