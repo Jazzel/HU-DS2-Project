@@ -101,28 +101,18 @@ def index():
 @app.route('/products', methods=['GET', 'POST'])
 def products():
     data = getProducts(warehouseIndex)
-    print(data)
-    return render_template('products.htm', data=data)
+    for item in data:
+        print(item)
+        warehouseIndex.insert(item)
+    if len(data) > 0:
+        print(data)
+        return render_template('products.htm', data=(data), warehouse=warehouse, firstIndex=data[0] or None, length=len(data) > 0)
+    return render_template('products.htm', length=0)
+    
 
 
 @app.route('/addProduct', methods=['GET', 'POST'])
 def addProduct():
-    # data = []
-    # while True:
-    #     try:
-    #         min_person = warehouse.find_min()
-    #     except ValueError:
-    #         break
-    #     data.append(min_person)
-    #     warehouse.towers[0].pop(0)
-    #     if not warehouse.towers[0]:
-    #         del warehouse.towers[0]
-    # print("Sorted people:")
-    # print(data)
-    # for person in data:
-    #     print(f"{person['item']} ({person['expiry']}), {person['city']}")
-
-
     if request.method == 'POST':
         print("Wow")
         item = request.form['item']
@@ -153,6 +143,14 @@ def editProduct():
     return render_template('editProduct.htm')
 
 
-@app.route('/deleteProduct', methods=['GET', 'POST'])
-def deleteProduct():
-    return render_template('deleteProduct.htm')
+@app.route('/deleteProduct/<path:id>', methods=['GET', 'POST'])
+def deleteProduct(id):
+    print("working")
+    if request.method == "GET":
+        print(id)
+        if (id in warehouse):
+            del warehouse[id]
+            warehouseIndex.towers[0].pop(0)
+            if not warehouseIndex.towers[0]:
+                del warehouseIndex.towers[0]
+    return redirect(url_for('products'))

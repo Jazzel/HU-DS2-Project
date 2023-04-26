@@ -38,27 +38,40 @@
         <table class="table">
             <thead>
                 <tr>
+                    <th>ID</th>
                     <th>Name</th>
                     <th>Description</th>
-                    <th>Price</th>
+                    <th>Price per Product</th>
                     <th>Quantity</th>
+                    <th>Expiry Date</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
+                {% if length %}
                 {% for product in data %}
                 <tr>
-                    <td>Product 1</td>
-                    <td>Product 1</td>
-                    <td>Description of product 1</td>
-                    <td>$19.99</td>
-                    <td>10</td>
+                    <td>#{{product["item"]}}</td>
+                    <td>{{warehouse[product["item"]]["name"]}}</td>
+                    <td>{{warehouse[product["item"]]["description"]}}</td>
+                    <td>$ {{warehouse[product["item"]]["price"]}}</td>
+                    <td>{{warehouse[product["item"]]["quantity"]}}</td>
+                    <td>{{product["expiry"]}}</td>
                     <td>
-                        <a class="btn btn-sm btn-primary" href="/addProduct">Edit</a>
-                        <button class="btn btn-sm btn-danger">Delete</button>
+                        {% if product["item"] == firstIndex["item"] %}
+                        <a class="btn btn-sm btn-danger" href="/deleteProduct/{{product['item']}}">Delete</a>
+                        {% endif %}
                     </td>
                 </tr>
+                <tr>
+                    <td colspan="7" class="text-center">No products found</td>
+                </tr>
                 {% endfor %}
+                {% elif not length %}
+                <tr>
+                    <td colspan="7" class="text-center">No products found</td>
+                </tr>
+                {% endif %}
                 <!-- add more products here -->
             </tbody>
         </table>
