@@ -4,7 +4,9 @@ import string
 import random
 import re
 
-from datetime import date
+from datetime import date, datetime
+
+import time
 
 
 
@@ -77,7 +79,19 @@ app = Flask(__name__)
 # Index route
 
 warehouseIndex = Pagoda()
+warehouseIndex2 = Pagoda()
+
+warehouseIndex.insert({'item': 'A', 'expiry': date(2023, 4, 27), 'city': None})
+warehouseIndex.insert({'item': 'B', 'expiry': date(2023, 4, 25), 'city': None})
+warehouseIndex.insert({'item': 'C', 'expiry': date(2023, 4, 28), 'city': None})
+
 warehouse = dict()
+
+warehouse["A"] = {'name': 'A', 'description': 'A', 'price': 'A', 'quantity': 'A', 'expiry': date(2023, 4, 27)}
+warehouse["B"] = {'name': 'B', 'description': 'B', 'price': 'B', 'quantity': 'B', 'expiry': date(2023, 4, 25)}
+warehouse["C"] = {'name': 'C', 'description': 'C', 'price': 'C', 'quantity': 'C', 'expiry': date(2023, 4, 28)}
+
+warehouse2 = dict()
 
 
 def getProducts(warehouseIndex):
@@ -98,7 +112,7 @@ def index():
     return render_template('index.htm')
 
 
-@app.route('/products', methods=['GET', 'POST'])
+@app.route('/products', methods=['GET'])
 def products():
     data = getProducts(warehouseIndex)
     for item in data:
@@ -106,9 +120,45 @@ def products():
         warehouseIndex.insert(item)
     if len(data) > 0:
         print(data)
-        return render_template('products.htm', data=(data), warehouse=warehouse, firstIndex=data[0] or None, length=len(data) > 0)
-    return render_template('products.htm', length=0)
+        return render_template('products.htm', data=(data), warehouse=warehouse, firstIndex=data[0] or None)
+    return render_template('products.htm')
     
+@app.route('/send-products/<path:sent>/<path:received>', methods=['GET', "POST"])
+def sendProducts(sent, received):
+    sent = int(sent)
+    received = int(received)
+    if request.method == "POST":
+        if request.form['product'] == 'all':
+            noOfProducts = len(warehouseIndex.towers[0])
+        else:
+            noOfProducts = int(request.form['product'])
+        for i in range(1, noOfProducts+1):
+            min_person = warehouseIndex.find_min()
+            warehouseIndex.towers[0].pop(0)
+            if not warehouseIndex.towers[0]:
+                del warehouseIndex.towers[0]
+            warehouseIndex2.insert(min_person)
+            return redirect(url_for('sendProducts', sent=noOfProducts - i, received=i))
+
+
+    print(sent, received)
+    if (sent != 0):
+        min_person = warehouseIndex.find_min()
+        warehouseIndex.towers[0].pop(0)
+        if not warehouseIndex.towers[0]:
+            del warehouseIndex.towers[0]
+        warehouseIndex2.insert(min_person)
+        sent -= 1
+        received += 1
+        return redirect(url_for('sendProducts', sent=sent, received=received))
+
+    data = getProducts(warehouseIndex)
+    data2 = getProducts(warehouseIndex2)
+    for item in data:
+        warehouseIndex.insert(item)
+    for item in data2:
+        warehouseIndex2.insert(item)
+    return render_template('sendProducts.htm', data=(data), data2=data2,  warehouse=warehouse)
 
 
 @app.route('/addProduct', methods=['GET', 'POST'])
@@ -122,9 +172,7 @@ def addProduct():
         quantity = request.form['quantity']
         expiry = request.form['expiry']
 
-
-
-        data = {'item': item, 'expiry': expiry, 'city': None}
+        data = {'item': item, 'expiry': date(int(expiry[0:4]), int(expiry[5:7]), int(expiry[8:10])), 'city': None}
         warehouse[item] = {'name': name, 'description': description, 'price': price, 'quantity': quantity, 'expiry': expiry}
         warehouseIndex.insert(data)
 
