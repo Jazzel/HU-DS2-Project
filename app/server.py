@@ -1,17 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, send_file
-import os
+# imports
+from flask import Flask, render_template, request, redirect, url_for
 import string
 import random
-import re
-
-from datetime import date, datetime
-
-import time
-
+from datetime import date
 
 
 # Pagoda
-
 class Pagoda:
     def __init__(self):
         self.towers = []
@@ -47,53 +41,76 @@ class Pagoda:
                     self.towers[j] = []
         return x
 
+   # Find the minimum value in the pagoda
     def find_min(self):
+        # Check if the pagoda is empty
         if not self.towers:
             raise ValueError('Pagoda is empty')
+        # Check if the first tower is empty
         elif not self.towers[0]:
+            # Remove the empty tower from the pagoda and recursively find the minimum in the remaining towers
             del self.towers[0]
             return self.find_min()
         else:
+            # Return the minimum value, which is the first element of the first tower
             return self.towers[0][0]
 
-        
+    # Merge two lists of items based on their 'expiry' and 'item' properties
     def merge(self, a, b):
-        result = []
-        while a and b:
+        result = []  # Create an empty list to store the merged result
+
+        while a and b:  # Continue while both lists have elements
+            # Compare the expiry of the first elements in both lists
             if a[0]['expiry'] < b[0]['expiry']:
+                # Append the element from list 'a' to the result and remove it from 'a'
                 result.append(a.pop(0))
             elif a[0]['expiry'] > b[0]['expiry']:
+                # Append the element from list 'b' to the result and remove it from 'b'
                 result.append(b.pop(0))
             else:
+                # If the expiry values are equal, compare the 'item' property
                 if a[0]['item'] < b[0]['item']:
+                    # Append the element from list 'a' to the result and remove it from 'a'
                     result.append(a.pop(0))
                 else:
+                    # Append the element from list 'b' to the result and remove it from 'b'
                     result.append(b.pop(0))
+
+        # Append the remaining elements from either list 'a' or 'b' to the result
         result.extend(a)
         result.extend(b)
+
+        # Return the merged result
         return result
 
-# ? Creating app with Flask
+
+# Creating app with Flask
 app = Flask(__name__)
 
-# Index route
-
+# Create an instance of the Pagoda class called warehouseIndex
 warehouseIndex = Pagoda()
+
+# Create another instance of the Pagoda class called warehouseIndex2
 warehouseIndex2 = Pagoda()
 
+# Insert items into warehouseIndex
 warehouseIndex.insert({'item': 'A', 'expiry': date(2023, 4, 27), 'city': None})
 warehouseIndex.insert({'item': 'B', 'expiry': date(2023, 4, 25), 'city': None})
 warehouseIndex.insert({'item': 'C', 'expiry': date(2023, 4, 28), 'city': None})
 
+# Create an empty dictionary called warehouse
 warehouse = dict()
 
+# Add items to the warehouse dictionary with item names as keys and item details as values
 warehouse["A"] = {'name': 'A', 'description': 'A', 'price': 'A', 'quantity': 'A', 'expiry': date(2023, 4, 27)}
 warehouse["B"] = {'name': 'B', 'description': 'B', 'price': 'B', 'quantity': 'B', 'expiry': date(2023, 4, 25)}
 warehouse["C"] = {'name': 'C', 'description': 'C', 'price': 'C', 'quantity': 'C', 'expiry': date(2023, 4, 28)}
 
+# Create an empty dictionary called warehouse2
 warehouse2 = dict()
 
 
+# helper function to convert pagoda to list
 def getProducts(warehouseIndex):
     data = []
     while True:
@@ -107,11 +124,12 @@ def getProducts(warehouseIndex):
             del warehouseIndex.towers[0]
     return data
 
+# index route
 @app.route('/', methods=['GET', 'POST'])
 def index():
     return render_template('index.htm')
 
-
+# route to add products
 @app.route('/products', methods=['GET'])
 def products():
     data = getProducts(warehouseIndex)
@@ -122,7 +140,8 @@ def products():
         print(data)
         return render_template('products.htm', data=(data), warehouse=warehouse, firstIndex=data[0] or None)
     return render_template('products.htm')
-    
+
+# route to send products  
 @app.route('/send-products/<path:sent>/<path:received>', methods=['GET', "POST"])
 def sendProducts(sent, received):
     sent = int(sent)
@@ -140,8 +159,6 @@ def sendProducts(sent, received):
             warehouseIndex2.insert(min_person)
             return redirect(url_for('sendProducts', sent=noOfProducts - i, received=i))
 
-
-    print(sent, received)
     if (sent != 0):
         min_person = warehouseIndex.find_min()
         warehouseIndex.towers[0].pop(0)
@@ -160,7 +177,7 @@ def sendProducts(sent, received):
         warehouseIndex2.insert(item)
     return render_template('sendProducts.htm', data=(data), data2=data2,  warehouse=warehouse)
 
-
+# route to add products
 @app.route('/addProduct', methods=['GET', 'POST'])
 def addProduct():
     if request.method == 'POST':
@@ -185,12 +202,7 @@ def addProduct():
 
     return render_template('addProduct.htm')
 
-
-@app.route('/editProduct', methods=['GET', 'POST'])
-def editProduct():
-    return render_template('editProduct.htm')
-
-
+# route to delete product with min index
 @app.route('/deleteProduct/<path:id>', methods=['GET', 'POST'])
 def deleteProduct(id):
     print("working")
