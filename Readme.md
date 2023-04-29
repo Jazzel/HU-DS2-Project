@@ -6,8 +6,8 @@
 
 This repository includes Python implementation of the Pagoda datastructure and a warehouse management application to exemplify its usage in real systems.
 
-- **Paper:** https://ieeexplore.ieee.org/abstract/document/4567956
-- **Java Implementation:** https://www.geeksforgeeks.org/implementing-pagoda-in-java/
+- **Paper:** [https://ieeexplore.ieee.org/abstract/document/4567956](https://ieeexplore.ieee.org/abstract/document/4567956)
+- **Java Implementation:** [https://www.geeksforgeeks.org/implementing-pagoda-in-java/](https://www.geeksforgeeks.org/implementing-pagoda-in-java/)
 
 #### Environment: &nbsp; [![Python](https://img.shields.io/badge/Python-3.8%20and%20above-blue.svg)](https://pypi.org/project/pip/)
 
@@ -25,7 +25,7 @@ We will exemplify the usage of the Pagoda data structure by building a warehouse
 We have used a diluted down version of Pagoda as the paper implementation was quite hard to modify according to our needs. But both the implementations, paper implementation and diluted one, are available in the code.
 
 - Diluted-down version: [https://github.com/Jazzel/HU-DS2-Project/blob/main/app/server.py](https://github.com/Jazzel/HU-DS2-Project/blob/main/app/server.py) Line number: 15
-- Paper implementation: [https://github.com/Jazzel/HU-DS2-Project/blob/main/app/Pagoda.py](https://github.com/Jazzel/HU-DS2-Project/blob/main/app/Pagoda.py)
+- Paper implementation: [https://github.com/Jazzel/HU-DS2-Project/blob/main/app/pagoda.py](https://github.com/Jazzel/HU-DS2-Project/blob/main/app/pagoda.py)
 
 ### Application
 
